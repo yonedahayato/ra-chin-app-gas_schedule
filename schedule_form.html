@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= HtmlService.createHtmlOutputFromFile('schedule_form_stylesheet').getContent(); ?>
+  </head>
+  
+  <body>
+    <nav class="navbar navbar-inverse">
+      <div class="navbar-header"><a class="navbar-brand" href="#">入力</a></div>
+    </nav>
+      <div class="container">
+        <form class="form-horizontal" id="myForm" onsubmit="return false;">
+        
+          <div class="form-group">
+            <label class="control-label col-xs-3">User Name</label>
+            <div class="col-xs-9">
+              <select class="form-control" id="user_name">
+                <?
+                //output.append('<option selected>' + Data_Record[8] + '</option>')
+                ?>
+              </select>
+              <div class="help-block with-errors"></div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-9">
+              <button id="send_button" type="submit" class="btn btn-primary btn-large">
+                <i class="fa fa-send fa-lg"></i>送信
+              </button>
+            </div>
+          </div>
+          
+        </form>
+      <i id="processing" class="fa fa-refresh fa-spin fa-3x fa-fw"></i>
+      </div>
+  <?!= HtmlService.createHtmlOutputFromFile('schedule_form_javascript').getContent(); ?>
+  </body>
+</html>
+
+

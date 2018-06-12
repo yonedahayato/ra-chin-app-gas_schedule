@@ -1,0 +1,144 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://use.fontawesome.com/7bcbed1321.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.8/validator.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+/**
+ コード.jsのgetSelectListFromSS()を読んで、スプレッドシートのデータをもとに、セレクトボックスを構築する
+*/
+function getSelectList() {
+    try {
+        google.script.run
+            .withSuccessHandler(function(result) {
+                /**このresultは getSelectListFroMasterSSの戻り値 */
+
+                console.log("result", result);
+
+                var select = document.getElementById('user_name');
+                var option = document.createElement('option');
+                //option.setAttribute('value', '');
+                //option.setAttribute('selected', true);
+                //option.innerHTML = '未選択';
+                //select.appendChild(option);
+
+                for (var i = 0; i < result.data.length; i++) {
+                    option = document.createElement('option');
+                    //option.setAttribute('value', i + 1);
+                    option.setAttribute('value', result.data[i]);
+                    option.innerHTML = result.data[i];
+                    select.appendChild(option);
+                }
+
+
+            })
+            .withFailureHandler(function(result) {
+                toastr.error('リストの取得に失敗しました。', result);
+                /** toastr: 通知 */
+            })
+            .getSelectListFromMasterSS();
+
+    } catch (e) {
+        toastr.error(e);
+        /** toastr: 通知 */
+    }
+}
+
+/**
+ コード.jsのregisterSSByFormData()を呼んで、フォームの内容をスプレッドシートに登録する
+*/
+function sendData() {
+
+    try {
+
+        processing(true);
+
+        var elemntIFrame = window.parent.document.getElementById('userHtmlFrame');
+        elemntIFrame.setAttribute('scrolling', 'no');
+        elemntIFrame.setAttribute('frameborder', '0');
+
+        //console.log("document.getElementById('select_id2').selectedIndex)", document.getElementById('select_id2').selectedIndex);
+
+        var data = [];
+        data[0] = 'dummy';
+        data[1] = document.getElementById('user_name').value;
+        data[2] = document.getElementById('plan_name').value;
+        
+        data[3] = document.getElementById('type_solo').checked;
+        data[4] = document.getElementById('type_middle').checked;
+        data[5] = document.getElementById('type_all').checked;
+        
+        data[6] = document.getElementById('candidate_date1').value;
+        data[7] = document.getElementById('candidate_date2').value;
+        data[8] = document.getElementById('candidate_date3').value;
+        
+        data[9] = document.getElementById('deadline').value;
+        //data[9] = document.getElementById('select_id1').options[document.getElementById('select_id1').selectedIndex].text;
+        //data[10] = getMultipleSelectedText(document.getElementById('select_id2').options);
+        //data[11] = document.getElementById('select_id3').options[document.getElementById('select_id3').selectedIndex].text;
+        
+        data[10] = document.getElementById("plan_number").value;
+        data[11] = document.getElementById("store_name").value;
+
+
+        console.log("data", data);
+
+
+        google.script.run
+            .withSuccessHandler(function(result) {
+                processing(false);
+                if (result.data) {
+                    toastr.info('送信完了');
+                } else {
+                    toastr.error('送信失敗しました');
+                }
+            })
+            .withFailureHandler(function(result) {
+                processing(false);
+                toastr.error('データ送信に失敗しました。', result);
+            })
+            .registerSSByFormData(data);
+
+    } catch (e) {
+        processing(false);
+        toastr.error(e);
+    }
+
+}
+
+// 処理中アイコン表示・非表示
+function processing(processing) {
+    if (processing) {
+        document.getElementById('processing').style.visibility = "visible";
+        document.getElementById('send_button').setAttribute("disabled", true);
+    } else {
+        document.getElementById('processing').style.visibility = "hidden";
+        document.getElementById('send_button').removeAttribute("disabled");
+    }
+}
+
+// ロード完了後の処理
+$(function() {
+    // トースト通知の位置指定
+    toastr.options.positionClass = "toast-bottom-left";
+    // バリデーションチェック有効化
+    $('#myForm').validator();
+    // 処理中アイコン非表示
+    processing(false);
+    // セレクトボックスのリストを動的に取得する
+    getSelectList();
+
+    // submit時のイベント登録
+    $('#myForm').validator().on('submit', function(e) {
+        if (document.getElementById('send_button').className.indexOf("disabled") != -1) {
+            // submit用のボタンのスタイルにdisabledが設定されていればバリデーションエラー
+        } else {
+            // バリデーションエラーでなければ送信
+            sendData();
+        }
+    })
+});
+
+</script>
