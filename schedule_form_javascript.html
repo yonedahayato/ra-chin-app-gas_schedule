@@ -62,29 +62,23 @@ function sendData() {
         //console.log("document.getElementById('select_id2').selectedIndex)", document.getElementById('select_id2').selectedIndex);
 
         var data = [];
-        data[0] = 'dummy';
-        data[1] = document.getElementById('user_name').value;
-        data[2] = document.getElementById('plan_name').value;
+        data[0] = document.getElementById('user_name').value;
         
-        data[3] = document.getElementById('type_solo').checked;
-        data[4] = document.getElementById('type_middle').checked;
-        data[5] = document.getElementById('type_all').checked;
+        data[1] = document.getElementById('day1_good').checked;
+        data[2] = document.getElementById('day1_soso').checked;
+        data[3] = document.getElementById('day1_bad').checked;
         
-        data[6] = document.getElementById('candidate_date1').value;
-        data[7] = document.getElementById('candidate_date2').value;
-        data[8] = document.getElementById('candidate_date3').value;
+        data[4] = document.getElementById('day2_good').checked;
+        data[5] = document.getElementById('day2_soso').checked;
+        data[6] = document.getElementById('day2_bad').checked;
         
-        data[9] = document.getElementById('deadline').value;
-        //data[9] = document.getElementById('select_id1').options[document.getElementById('select_id1').selectedIndex].text;
-        //data[10] = getMultipleSelectedText(document.getElementById('select_id2').options);
-        //data[11] = document.getElementById('select_id3').options[document.getElementById('select_id3').selectedIndex].text;
+        data[7] = document.getElementById('day3_good').checked;
+        data[8] = document.getElementById('day3_soso').checked;
+        data[9] = document.getElementById('day3_bad').checked;
         
-        data[10] = document.getElementById("plan_number").value;
-        data[11] = document.getElementById("store_name").value;
-
+        data[10] = document.getElementById('plan_number').value;
 
         console.log("data", data);
-
 
         google.script.run
             .withSuccessHandler(function(result) {

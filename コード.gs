@@ -21,7 +21,7 @@ function doGet(e) {
     output.setContent(payload);
     return output
   } else if(e.parameter.detail=="-1") {     // google site へリダイレクト
-    updata_Date(schedule_number)
+    update_Date(schedule_number)
     var to_site = HtmlService.createTemplateFromFile("to_site");
     return to_site.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME);
   } else {                                  // schedule 入力画面のresponse
@@ -38,10 +38,14 @@ function doGet(e) {
       }
       output_list["締切日"] = Utilities.formatDate(data[0][5], 'Asia/Tokyo', 'yyyy/MM/dd')
     }
+    
+    var plan_info = get_plan_info(last_edit_number);
+
     var ditail = HtmlService.createTemplateFromFile("schedule_form");
     //ditail.schedule_number = schedule_number;
     ditail.last_edit_number = last_edit_number;
     ditail.output_list = output_list;
+    ditail.plan_name = plan_info["plan_name"]
     return ditail.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME);
   }
 }
@@ -130,4 +134,22 @@ function calculate_LastEditNumber(){
   Logger.log("[calculate_LastEditNumber] : "+sorted_data)
   var LastEditNumber = sorted_data[0][8];
   return LastEditNumber
+}
+
+function get_plan_info(plan_number) {
+  var output = {};
+  // 計画
+  var datasheet_plan = SpreadsheetApp.openById('1E2VMlYvO-8XFrT9nI7xKI5TNWTvUlJtuOavnwtoO-FI').getSheetByName('data');
+  output["plan_name"] = datasheet_plan.getRange(plan_number+1, 2).getValue()
+  
+  // スケジュール
+  var datasheet_schedule = SpreadsheetApp.openById("1B9Jj7-LUafTe1_rlI3U2nM2v9Reh7RdgmmE9Pf8_rxo").getSheetByName('data');
+  var candidate_date1 = datasheet_schedule.getRange(plan_number+1, 3).getValue();
+  var candidate_date2 = datasheet_schedule.getRange(plan_number+1, 4).getValue();
+  var candidate_date3 = datasheet_schedule.getRange(plan_number+1, 5).getValue();
+  
+  output["candidate_date1"] = Utilities.formatDate(candidate_date1, 'Asia/Tokyo', 'yyyy/MM/dd')
+  output["candidate_date2"] = Utilities.formatDate(candidate_date2, 'Asia/Tokyo', 'yyyy/MM/dd')
+  output["candidate_date3"] = Utilities.formatDate(candidate_date3, 'Asia/Tokyo', 'yyyy/MM/dd')
+  return output
 }
